@@ -3,7 +3,7 @@ const router = express.Router();
 const authenticate = require("../middlewares/authenticate");
 const wishlistControllers = require("../controllers/wishlist-controller");
 
-router.get("/", authenticate, wishlistControllers.getAllWishlist);
+router.get("/", authenticate, wishlistControllers.getAllWishlists);
 
 router.post("/", authenticate, wishlistControllers.createWishlist);
 

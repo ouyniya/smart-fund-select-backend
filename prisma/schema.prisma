@@ -23,38 +23,32 @@ model User {
   email        String   @unique
   password     String
   username     String
-  profileImage String?  @map("profile_image")
+  profileImage String?
   createdAt    DateTime @default(now()) @map("created_at")
   role         Role     @default(USER)
 
   userRiskAssessments UserRiskAssessment[]
   wishlists           Wishlist[]
-
-  @@map("user")
 }
 
 model RiskAssessmentResult {
   id       Int @id @default(autoincrement())
-  minScore Int @map("min_score")
-  maxScore Int @map("max_score")
+  minScore Int
+  maxScore Int
 
   userRiskLevel     UserRiskAssessment[]
   riskLevelMapping  RiskLevelMapping[]
   recommendPort     RecommendPort[]
   recommendCriteria RecommendCriteria[]
-
-  @@map("risk_assessment_result")
 }
 
 model RecommendCriteria {
   id              Int    @id @default(autoincrement())
   userRiskLevelId Int    @map("user_risk_level_id")
   fundAssetType   String @map("fund_asset_type")
-  percentInvest   Float  @map("percent_invest")
+  percentInvest   String @map("percent_invest")
 
   riskAssessmentResult RiskAssessmentResult @relation(fields: [userRiskLevelId], references: [id], onDelete: Cascade)
-
-  @@map("recommend_criteria")
 }
 
 model UserRiskAssessment {
@@ -65,8 +59,6 @@ model UserRiskAssessment {
   users                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   userRiskLevelId      Int                  @map("user_risk_level_id")
   riskAssessmentResult RiskAssessmentResult @relation(fields: [userRiskLevelId], references: [id], onDelete: Cascade)
-
-  @@map("user_risk_assessment")
 }
 
 // ผู้ลงทุนระดับความเสี่ยง 6 สามารถลงในกองไหนได้บ้าง
@@ -75,8 +67,6 @@ model RiskLevelMapping {
   userRiskLevelId      Int                  @map("user_risk_level_id")
   riskAssessmentResult RiskAssessmentResult @relation(fields: [userRiskLevelId], references: [id], onDelete: Cascade)
   fundRiskLevelName    String               @map("fund_risk_level_name") // array ["ตราสารทุน", "ตราสารหนี้"]
-
-  @@map("risk_level_mapping")
 }
 
 model RecommendPort {
@@ -86,14 +76,15 @@ model RecommendPort {
 
   userRiskLevelId      Int                  @map("user_risk_level_id")
   riskAssessmentResult RiskAssessmentResult @relation(fields: [userRiskLevelId], references: [id], onDelete: Cascade)
-
-  @@map("recommend_port")
 }
 
 model RiskAssessmentQuestion {
   id       Int    @id @default(autoincrement())
   question String
-  options  String
+  option1  String
+  option2  String
+  option3  String
+  option4  String
 }
 
 model Funds {
@@ -111,8 +102,6 @@ model Funds {
   FundRiskLevel   FundRiskLevel @relation(fields: [fundRiskLevelId], references: [id], onDelete: Cascade)
 
   ClassAbbr ClassAbbr[]
-
-  @@map("funds")
 }
 
 model Company {
@@ -120,21 +109,17 @@ model Company {
   companyName String @map("company_name")
 
   Funds Funds[]
-
-  @@map("company")
 }
 
 model FeeDetial {
   id          Int     @id @default(autoincrement())
   feeType     String  @map("fee_type")
   rate        Float
-  rateUnit    String? @map("rate_unit")
+  rateUnit    String? @map("rate_unit") @db.VarChar(2000)
   actualValue Float?  @map("actual_value")
 
   classAbbrId Int       @map("class_abbr_id")
   classAbbrs  ClassAbbr @relation(fields: [classAbbrId], references: [id], onDelete: Cascade)
-
-  @@map("fee_detial")
 }
 
 model FundPerformanceRisk {
@@ -145,8 +130,6 @@ model FundPerformanceRisk {
 
   classAbbrId Int       @map("class_abbr_id")
   classAbbrs  ClassAbbr @relation(fields: [classAbbrId], references: [id], onDelete: Cascade)
-
-  @@map("fund_performance_risk")
 }
 
 model FundNAV {
@@ -156,8 +139,6 @@ model FundNAV {
 
   classAbbrId Int       @map("class_abbr_id")
   classAbbrs  ClassAbbr @relation(fields: [classAbbrId], references: [id], onDelete: Cascade)
-
-  @@map("fund_nav")
 }
 
 model FundRiskLevel {
@@ -165,8 +146,6 @@ model FundRiskLevel {
   fundRiskLevelName String  @map("fund_risk_level_name")
   fundInvestment    String  @map("fund_investment")
   Funds             Funds[]
-
-  @@map("fund_risk_level")
 }
 
 model ClassAbbr {
@@ -181,8 +160,6 @@ model ClassAbbr {
   fundPerformanceRisk FundPerformanceRisk[]
   FundNAV             FundNAV[]
   Wishlist            Wishlist[]
-
-  @@map("class_abbr")
 }
 
 model Wishlist {
@@ -196,6 +173,4 @@ model Wishlist {
   classAbbrId Int       @map("class_abbr_id")
   users       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   classAbbr   ClassAbbr @relation(fields: [classAbbrId], references: [id], onDelete: Cascade)
-
-  @@map("wishlist")
 }

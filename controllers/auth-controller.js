@@ -7,7 +7,7 @@ const authController = {};
 authController.register = async (req, res, next) => {
     try {
         const { email, username, password, confirmPassword } = req.body;
-        console.log(email, username, password, confirmPassword);
+        // console.log(email, username, password, confirmPassword);
 
         // validate using Zod >> Middlewares / validation.js
         // check unique email 
@@ -17,7 +17,7 @@ authController.register = async (req, res, next) => {
             }
         })
 
-        console.log(email)
+        // console.log(email)
 
         if (checkEmail) {
             // duplicate 
@@ -91,5 +91,6 @@ authController.login = async (req, res, next) => {
         next(error);
     }
 };
+
 
 module.exports = authController;

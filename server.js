@@ -6,6 +6,10 @@ const handleErrors = require("./middlewares/error");
 const notFound = require("./middlewares/not-found");
 const authRoute = require("./routes/auth-route");
 const wishlistRoute = require("./routes/wishlist-routes");
+const fundRoute = require("./routes/fund-route");
+const adminRoute = require("./routes/admin-route");
+const userRoute = require("./routes/user-route");
+const riskRoute = require("./routes/risk-assessment-route");
 
 const app = express();
 
@@ -17,6 +21,10 @@ app.use(morgan("dev"));
 // Routes
 app.use("/api", authRoute);
 app.use("/wishlist", wishlistRoute);
+app.use("/funds", fundRoute);
+app.use("/admin", adminRoute);
+app.use("/user", userRoute);
+app.use("/risk-assessment", riskRoute);
 
 
 // error middlewares
