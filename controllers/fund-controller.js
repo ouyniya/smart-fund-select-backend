@@ -47,7 +47,7 @@ fundController.getRiskLevel = async (req, res, next) => {
     const result = await prisma.fundRiskLevel.findMany({
       select: {
         id: true,
-        fundRiskLevelName: true
+        fundRiskLevelName: true,
       },
     });
     res.json({ result });
@@ -55,8 +55,6 @@ fundController.getRiskLevel = async (req, res, next) => {
     next(error);
   }
 };
-
-
 
 fundController.getFundGroup = async (req, res, next) => {
   try {
@@ -75,7 +73,6 @@ fundController.getFundGroup = async (req, res, next) => {
   }
 };
 
-
 fundController.getGlobalInv = async (req, res, next) => {
   try {
     const result = await prisma.$queryRaw`
@@ -92,7 +89,6 @@ fundController.getGlobalInv = async (req, res, next) => {
     next(error);
   }
 };
-
 
 // {{url}}/funds/filter?classAbbrName=&companyId=&fundCompareGroup=&fundRiskLevelId=&investCountryFlag=&dividendPolicy=N&page=2
 fundController.getFunds = async (req, res, next) => {
@@ -173,9 +169,37 @@ fundController.getFunds = async (req, res, next) => {
       orderBy: {},
     });
 
+    countAllResult = await prisma.classAbbr.count({
+      where: {
+        AND: {
+          classAbbrName: !!classAbbrName
+            ? {
+                contains: classAbbrName,
+              }
+            : {},
+          dividendPolicy: !!dividendPolicy ? dividendPolicy : {},
+        },
+        funds: {
+          AND: {
+            fundCompareGroup: !!fundCompareGroup ? fundCompareGroup : {},
+            fundRiskLevelId: !!Number(fundRiskLevelId)
+              ? Number(fundRiskLevelId)
+              : {},
+            investCountryFlag: !!investCountryFlag ? investCountryFlag : {},
+          },
+          companies: {
+            id: !!Number(companyId) ? Number(companyId) : {},
+          },
+        },
+      },
+    });
+
     // console.log(result.length);
 
-    res.json({ message: result });
+    res.json({
+      count: countAllResult,
+      message: result,
+    });
   } catch (error) {
     next(error);
   }
@@ -187,7 +211,8 @@ fundController.sortFunds = async (req, res, next) => {
   // 3. เรียงลำดับใน JavaScript แล้ว slice ตามค่าของ skip และ limit
 
   try {
-    let {
+    // filtered variable
+    const {
       classAbbrName,
       companyId,
       fundCompareGroup,
@@ -196,17 +221,30 @@ fundController.sortFunds = async (req, res, next) => {
       dividendPolicy,
       page = "1",
       limit = "10",
+      sortBy,
+      performanceType,
+      performancePeriod,
     } = req.query;
 
-    // const { sortBy } = req.body;
-    let sortBy = "risk"; // for test only
-    // let performanceType = "ผลตอบแทนกองทุนรวม";
-    let performanceType = "ความผันผวนของกองทุนรวม";
-    let performancePeriod = "1 year";
+    // validate
+    if (sortBy !== "fee") {
+      if (!sortBy || !performanceType || !performancePeriod) {
+        return createError(400, "กรุณาระบุค่าให้ครบถ้วน");
+      }
+    }
 
-    //  fee
-    // returnYTD, return3M, return6M, return1Y, return3Y, return5Y, return10Y
-    // sdYTD, sd3M, sd6M, sd1Y, sd3Y, sd5Y, sd10Y
+    if (typeof sortBy !== "string") {
+      return createError(400, "ระบุวิธีการเรียงลำดับไม่ถูกต้อง");
+    }
+
+    if (performanceType && performancePeriod) {
+      if (
+        typeof performanceType !== "string" ||
+        typeof performancePeriod !== "string"
+      ) {
+        return createError(400, "ระบุวิธีการเรียงลำดับไม่ถูกต้อง");
+      }
+    }
 
     let result = [];
     // validate
@@ -267,6 +305,32 @@ fundController.sortFunds = async (req, res, next) => {
       },
     });
 
+
+    countAllResult = await prisma.classAbbr.count({
+      where: {
+        AND: {
+          classAbbrName: !!classAbbrName
+            ? {
+                contains: classAbbrName,
+              }
+            : {},
+          dividendPolicy: !!dividendPolicy ? dividendPolicy : {},
+        },
+        funds: {
+          AND: {
+            fundCompareGroup: !!fundCompareGroup ? fundCompareGroup : {},
+            fundRiskLevelId: !!Number(fundRiskLevelId)
+              ? Number(fundRiskLevelId)
+              : {},
+            investCountryFlag: !!investCountryFlag ? investCountryFlag : {},
+          },
+          companies: {
+            id: !!Number(companyId) ? Number(companyId) : {},
+          },
+        },
+      },
+    });
+
     let sortResult = [];
     let finalResult = [];
 
@@ -283,10 +347,8 @@ fundController.sortFunds = async (req, res, next) => {
           return a.FeeDetial[0].actualValue - b.FeeDetial[0].actualValue;
         });
 
-      // เอาไว้ดูลำดับการเรียง fee
-      // const sortedResults = sortResult.map(el => {
-      //     console.log(el.classAbbrName, "ActFee", el.FeeDetial[0].actualValue)
-      // })
+      // ตัดข้อมูล
+      finalResult = sortResult.slice(skip, skip + Number(limit));
     } else if (sortBy === "return") {
       // กรองเฉพาะค่าผลตอบแทนกองทุนรวมตาม period และเรียงลำดับ
       sortResult = result
@@ -315,7 +377,7 @@ fundController.sortFunds = async (req, res, next) => {
               (p) =>
                 p.performanceType === performanceType &&
                 p.performancePeriod === performancePeriod
-            )?.performanceValue || 0, // กรองเฉพาะค่าที่ต้องการ
+            )?.performanceValue || 9999, // กรองเฉพาะค่าที่ต้องการ
         }))
         .sort((a, b) => a.performanceValue - b.performanceValue); // เรียงจากน้อยไปมาก
 
@@ -325,9 +387,10 @@ fundController.sortFunds = async (req, res, next) => {
       console.log(finalResult);
     }
 
-    // console.log(sortResult);
-
-    res.json({ message: finalResult });
+    res.json({ 
+      count: countAllResult,
+      message: finalResult 
+    });
   } catch (error) {
     next(error);
   }

@@ -10,6 +10,7 @@ const fundRoute = require("./routes/fund-route");
 const adminRoute = require("./routes/admin-route");
 const userRoute = require("./routes/user-route");
 const riskRoute = require("./routes/risk-assessment-route");
+const aiRoute = require("./routes/ai-route");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/funds", fundRoute);
 app.use("/admin", adminRoute);
 app.use("/user", userRoute);
 app.use("/risk-assessment", riskRoute);
+app.use("/ai", aiRoute);
 
 
 // error middlewares

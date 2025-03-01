@@ -3,7 +3,6 @@ const prisma = require("../configs/prisma");
 const bcrypt = require("bcryptjs");
 const { fundsData } = require("../information/funds");
 const { classAbbrData } = require("../information/classAbbr");
-// const { classAbbrData } = require("../information/")
 const csvToJson = require("convert-csv-to-json");
 
 const hashedPassword = bcrypt.hashSync("123456", 10);
@@ -730,6 +729,13 @@ async function seedDBPfm() {
 
 // console.log(fundsData)
 
+// ตอน seed ให้ทำ 3 รอบคือ 
+// เปิด comment ทีละรอบ
+// 1
 seedDB();
-insertFee();
-seedDBPfm();
+
+// 2
+// insertFee();
+
+// 3
+// seedDBPfm();
