@@ -1,6 +1,7 @@
 const axios = require("axios");
 const express = require("express");
 const router = express.Router();
+const OpenAI = require("openai")
 
 // const userPortfolio = [
 //     { asset: "กองทุน1", weight: 0.2, assetType: "ตราสารหนี้" },
@@ -13,10 +14,9 @@ const router = express.Router();
 //     { weight: 0.5, assetType: "ตราสารทุน" },
 // ];
 
-// const openai = new OpenAI({
-//   baseURL: "https://api.deepseek.com",
-//   apiKey: process.env.DEEPSEEK_API_KEY,
-// });
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY, // ใช้ OpenAI แทน
+  });
 
 async function analyzePortfolio(userPortfolio, recommendedPortfolio) {
   const prompt = `
@@ -34,7 +34,7 @@ async function analyzePortfolio(userPortfolio, recommendedPortfolio) {
 
   const completion = await openai.chat.completions.create({
     messages: [{ role: "user", content: prompt }],
-    model: "deepseek-chat",
+    model: "gpt-4o-mini",
   });
 
   return completion.choices[0].message.content;
@@ -55,37 +55,49 @@ router.post("/", async (req, res, next) => {
 
 router.post("/generate", async (req, res) => {
   try {
-    const { userPortfolio, recommendedPortfolio } = req.body;
+    const { userPortfolio, recommendCriteria } = req.body;
 
-    prompt = `
-พอร์ตการลงทุนของผู้ใช้:
-${JSON.stringify(userPortfolio, null, 2)}
+    // if (!userPortfolio || !recommendedPortfolio) {
+    //   return res.status(400).json({ error: "Data is required" });
+    // }
 
-พอร์ตการลงทุนที่แนะนำ:
-${JSON.stringify(recommendedPortfolio, null, 2)}
+//     const prompt = `
+//       พอร์ตการลงทุนของผู้ใช้:
+//       ${JSON.stringify(userPortfolio, null, 2)}
+      
+//       พอร์ตการลงทุนที่แนะนำ:
+//       ${JSON.stringify(recommendedPortfolio, null, 2)}
+      
+// if i am a moderate risk level. I should invest like  พอร์ตการลงทุนที่แนะนำ but I invest in พอร์ตการลงทุนของผู้ใช้. Could you please analyze risk of my portfolio and the appropriate of my investment with my risk level.
+//     `;
 
-โปรดวิเคราะห์ข้อมูลที่ให้:
-1. เปรียบเทียบพอร์ตการลงทุนของผู้ใช้กับพอร์ตที่แนะนำ
-   - อธิบายข้อแตกต่างระหว่างพอร์ตการลงทุนของผู้ใช้และพอร์ตที่แนะนำ
-   - ให้ข้อเสนอแนะว่า ควรปรับเปลี่ยนพอร์ตอย่างไรเพื่อให้ตรงกับพอร์ตแนะนำมากขึ้น
-2. ประเมินความเสี่ยงของพอร์ตการลงทุนของผู้ใช้
-   - ความเสี่ยงจากการกระจายการลงทุนในแต่ละประเภทสินทรัพย์ (ตราสารหนี้ และ ตราสารทุน)
-   - คำแนะนำเกี่ยวกับการปรับพอร์ตเพื่อจัดการกับความเสี่ยง
-3. ให้คำแนะนำในการปรับสัดส่วนของสินทรัพย์ในพอร์ตเพื่อให้สมดุลและเหมาะสมกับเป้าหมายการลงทุน
+// const prompt = `I am at a moderate risk level (userRiskLevelId = 4). I currently invest according to ${JSON.stringify(userPortfolio, null, 2)}, but my financial adviser told me to adjust port in order to align with ${JSON.stringify(recommendCriteria, null, 2)}. As my financial adviser, could you  provide a concise summary to told me easily to understand in English?`
 
-กรุณาให้ข้อมูลที่ชัดเจนในการวิเคราะห์ความแตกต่างและคำแนะนำในการปรับพอร์ต
-`;
-    if (!userPortfolio || !recommendedPortfolio) return res.status(400).json({ error: "Data is required" });
+const prompt = `I am at a moderate risk level (userRiskLevelId = 4). I currently invest according to ${JSON.stringify(userPortfolio, null, 2)}, but my financial adviser told me to adjust port in order to align with ${JSON.stringify(recommendCriteria, null, 2)}. Could you please provide a brief analysis of this situation? Only one paragraph, please. Thanks.`
 
-    const response = await axios.post("http://localhost:11434/api/generate", {
-      model: "deepseek-r1:7b", // เปลี่ยนเป็นโมเดลใหม่
-      prompt: prompt,
-    });
+    console.log("Generated Prompt:", prompt);  // ตรวจสอบค่า prompt ที่ส่งไป
 
-    res.json(response.data);
+    const response = await axios.post("http://localhost:11434/api/generate", 
+        {
+            "model": "deepseek-r1:7b", //any models pulled from Ollama can be replaced here
+            "prompt": prompt, //The prompt should be written here
+            "stream": false,
+            "prompt_eval_count": 10
+          }
+        )
+
+    console.log("Full Response:", response);  // ตรวจสอบข้อมูลที่กลับมา
+
+    if (response.data) {
+      return res.json({ analysis: response.data });
+    } else {
+      return res.status(500).json({ error: "No valid response from API" });
+    }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("API Request Error:", error.message);
+    return res.status(500).json({ error: error.message });
   }
 });
 
 module.exports = router;
+
