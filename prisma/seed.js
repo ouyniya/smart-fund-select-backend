@@ -1,9 +1,9 @@
 // npx prisma db seed
 const prisma = require("../configs/prisma");
 const bcrypt = require("bcryptjs");
+const csvToJson = require("convert-csv-to-json");
 const { fundsData } = require("../information/funds");
 const { classAbbrData } = require("../information/classAbbr");
-const csvToJson = require("convert-csv-to-json");
 
 const hashedPassword = bcrypt.hashSync("123456", 10);
 
@@ -673,6 +673,45 @@ const companyData = [
   },
 ];
 
+const userPortfolioData = [
+  {
+    userId: 2,
+    classAbbrId: 180,
+    amount: 50000
+  },
+  {
+    userId: 2,
+    classAbbrId: 5,
+    amount: 2000
+  },
+  {
+    userId: 2,
+    classAbbrId: 29,
+    amount: 10000
+  },
+  {
+    userId: 5,
+    classAbbrId: 250,
+    amount: 10000
+  },
+  {
+    userId: 5,
+    classAbbrId: 1,
+    amount: 1500
+  },
+  {
+    userId: 5,
+    classAbbrId: 20,
+    amount: 20000
+  },
+  {
+    userId: 5,
+    classAbbrId: 1000,
+    amount: 5000
+  }
+]
+
+
 console.log("db seed...user");
 
 async function seedDB() {
@@ -727,15 +766,24 @@ async function seedDBPfm() {
   });
 }
 
+async function seedDBUserPort() {
+  await prisma.userPortfolio.createMany({
+    data: userPortfolioData,
+  });
+}
+
 // console.log(fundsData)
 
 // ตอน seed ให้ทำ 3 รอบคือ 
 // เปิด comment ทีละรอบ
 // 1
-seedDB();
+// seedDB();
 
 // 2
 // insertFee();
 
 // 3
 // seedDBPfm();
+
+// 4
+seedDBUserPort();

@@ -29,6 +29,8 @@ model User {
 
   userRiskAssessments UserRiskAssessment[]
   wishlists           Wishlist[]
+
+  UserPortfolio UserPortfolio[]
 }
 
 model RiskAssessmentResult {
@@ -132,15 +134,6 @@ model FundPerformanceRisk {
   classAbbrs  ClassAbbr @relation(fields: [classAbbrId], references: [id], onDelete: Cascade)
 }
 
-model FundNAV {
-  id        Int   @id @default(autoincrement())
-  netAsset  Float @map("net_asset")
-  lastValue Float @map("last_value")
-
-  classAbbrId Int       @map("class_abbr_id")
-  classAbbrs  ClassAbbr @relation(fields: [classAbbrId], references: [id], onDelete: Cascade)
-}
-
 model FundRiskLevel {
   id                Int     @id @default(autoincrement())
   fundRiskLevelName String  @map("fund_risk_level_name")
@@ -158,8 +151,9 @@ model ClassAbbr {
 
   FeeDetial           FeeDetial[]
   fundPerformanceRisk FundPerformanceRisk[]
-  FundNAV             FundNAV[]
   Wishlist            Wishlist[]
+
+  UserPortfolio UserPortfolio[]
 }
 
 model Wishlist {
@@ -173,4 +167,14 @@ model Wishlist {
   classAbbrId Int       @map("class_abbr_id")
   users       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   classAbbr   ClassAbbr @relation(fields: [classAbbrId], references: [id], onDelete: Cascade)
+}
+
+model UserPortfolio {
+  id               Int    @id @default(autoincrement())
+  userId           Int
+  classAbbrId      Int
+  amount           Float
+
+  users          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  classAbbrs     ClassAbbr     @relation(fields: [classAbbrId], references: [id], onDelete: Cascade)
 }

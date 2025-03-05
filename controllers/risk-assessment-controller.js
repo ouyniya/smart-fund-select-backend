@@ -54,4 +54,27 @@ riskAssessmentController.getResult = async (req, res, next) => {
   }
 };
 
+riskAssessmentController.getResultById = async (req, res, next) => {
+  try {
+    const { id } = req.query;
+
+    // mapping risk level with criteria
+    const userRiskLevel = await prisma.riskAssessmentResult.findFirst({
+      where: {
+        id: Number(id)
+      },
+      include: {
+        riskLevelMapping: true,
+        recommendCriteria: true,
+        recommendPort: true
+      }
+
+    });
+
+    res.json({ result: userRiskLevel });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = riskAssessmentController;

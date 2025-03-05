@@ -5,5 +5,6 @@ const riskAssessmentController = require("../controllers/risk-assessment-control
 // path
 router.get("/question", riskAssessmentController.getQuestions)
 router.get("/result", riskAssessmentController.getResult)
+router.get("/result-by-id", riskAssessmentController.getResultById)
 
 module.exports = router
