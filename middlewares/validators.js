@@ -1,4 +1,4 @@
-const { z } = require("zod");
+const { z } = require("zod"); // นำเข้า z จาก Zod เพื่อใช้สร้าง Schema สำหรับตรวจสอบข้อมูล
 
 exports.registerSchema = z.object({
     email: z.string().email("Invalid email"),
@@ -14,6 +14,16 @@ exports.loginSchema = z.object({
     email: z.string().email("Invalid email"),
     password: z.string().min(6, "Password must be at least 6 characters")
 });
+
+
+// -- Middleware สำหรับตรวจสอบข้อมูลที่รับเข้ามา
+// รับ schema ที่ต้องการตรวจสอบ
+// ใช้ schema.parse(req.body) ตรวจสอบข้อมูล
+// ถ้าข้อมูลถูกต้อง ✅ → next() ให้ API ทำงานต่อ
+// ถ้าข้อมูลผิด ❌ → สร้าง Error แล้วส่งต่อให้ next(mergeError)
+// จัดการ Error ให้อ่านง่ายขึ้น
+// รวมข้อความผิดพลาด (.errors.map()) ให้เป็นข้อความเดียว
+// ใช้ next(mergeError) ส่งไปให้ Middleware จัดการ
 
 exports.validationZod = (schema) => (req, res, next) => {
     try {

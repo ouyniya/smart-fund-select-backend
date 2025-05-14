@@ -11,7 +11,7 @@ router.put(
   authenticate,
   upload.single("profile"),
   userController.changeProfile
-);
+); // upload.single("profile") → ใช้รับไฟล์อัปโหลดที่ชื่อ profile จาก req.file
 router.delete("/profile", authenticate, userController.deleteProfile);
 router.post("/risk-assessment", authenticate, userController.saveRiskLevel);
 

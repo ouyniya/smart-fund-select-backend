@@ -677,40 +677,39 @@ const userPortfolioData = [
   {
     userId: 2,
     classAbbrId: 180,
-    amount: 50000
+    amount: 50000,
   },
   {
     userId: 2,
     classAbbrId: 5,
-    amount: 2000
+    amount: 2000,
   },
   {
     userId: 2,
     classAbbrId: 29,
-    amount: 10000
+    amount: 10000,
   },
   {
     userId: 5,
     classAbbrId: 250,
-    amount: 10000
+    amount: 10000,
   },
   {
     userId: 5,
     classAbbrId: 1,
-    amount: 1500
+    amount: 1500,
   },
   {
     userId: 5,
     classAbbrId: 20,
-    amount: 20000
+    amount: 20000,
   },
   {
     userId: 5,
     classAbbrId: 1000,
-    amount: 5000
-  }
-]
-
+    amount: 5000,
+  },
+];
 
 console.log("db seed...user");
 
@@ -751,13 +750,9 @@ async function seedDB() {
     data: classAbbrData,
   });
 
-  // await prisma.feeDetial.createMany({
-  //   data: feeDetialData,
-  // });
-
-  // await prisma.fundPerformanceRisk.createMany({
-  //   data: fundPerformanceRiskData,
-  // });
+  await insertFee();
+  await seedDBPfm();
+  await seedDBUserPort();
 }
 
 async function seedDBPfm() {
@@ -772,18 +767,4 @@ async function seedDBUserPort() {
   });
 }
 
-// console.log(fundsData)
-
-// ตอน seed ให้ทำ 3 รอบคือ 
-// เปิด comment ทีละรอบ
-// 1
-// seedDB();
-
-// 2
-// insertFee();
-
-// 3
-// seedDBPfm();
-
-// 4
-seedDBUserPort();
+seedDB();

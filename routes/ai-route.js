@@ -8,7 +8,9 @@ router.get("/portfolio", authenticate, aiController.getUserPort)
 router.post("/portfolio", authenticate, aiController.addUserPort)
 router.delete("/portfolio/:userPortId", authenticate, aiController.deleteUserPort)
 router.put("/portfolio/:userPortId", authenticate, aiController.updateUserPort)
-router.post("/", aiController.getAnalysis)
+router.post("/", authenticate, aiController.getAnalysis)
+
+// authen >> ai
 
 // router.post("/generate", async (req, res) => {
 //   try {

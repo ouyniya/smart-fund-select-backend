@@ -224,6 +224,8 @@ aiController.deleteUserPort = async (req, res, next) => {
 };
 
 aiController.getAnalysis = async (req, res, next) => {
+
+
   try {
     const { userPortfolio, recommendPort } = req.body;
     const analysis = await analyzePortfolio(userPortfolio, recommendPort);

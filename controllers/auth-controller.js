@@ -6,7 +6,7 @@ const authController = {};
 
 authController.register = async (req, res, next) => {
     try {
-        const { email, username, password, confirmPassword } = req.body;
+        const { email, username, password } = req.body;
         // console.log(email, username, password, confirmPassword);
 
         // validate using Zod >> Middlewares / validation.js
