@@ -1,39 +1,39 @@
-const OpenAI = require("openai");
+// const OpenAI = require("openai");
 const prisma = require("../configs/prisma");
 const createError = require("../utils/createError");
 const aiController = {};
 
-const openai = new OpenAI({
-  // apiKey: process.env.OPENAI_API_KEY, // ใช้ OpenAI แทน
-});
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY, // ใช้ OpenAI แทน
+// });
 
 async function analyzePortfolio(userPortfolio, recommendPort) {
-  const prompt = `
-    พอร์ตของผู้ใช้:
-    ${JSON.stringify(userPortfolio, null, 2)}
+  // const prompt = `
+  //   พอร์ตของผู้ใช้:
+  //   ${JSON.stringify(userPortfolio, null, 2)}
     
-    พอร์ตตัวอย่างที่แนะนำ:
-    ${JSON.stringify(recommendPort, null, 2)}
+  //   พอร์ตตัวอย่างที่แนะนำ:
+  //   ${JSON.stringify(recommendPort, null, 2)}
     
-    ค่า weight เช่น 0.3 หมายถึง 30% เวลาตอบให้ตอบเป็นหน่วย % 
+  //   ค่า weight เช่น 0.3 หมายถึง 30% เวลาตอบให้ตอบเป็นหน่วย % 
 
-    ช่วยวิเคราะห์ว่า:
-    - พอร์ตของผู้ใช้ต่างจากพอร์ตตัวอย่างที่แนะนำอย่างไร
-    - ควรปรับพอร์ตของผู้ใช้อย่างไรให้เหมาะสม ยกเว้นกรณีเป็นกองทุนรวมผสมให้บอกผู้ใช้ให้ศึกษารายละเอียดจากหนังสือชี้ชวนของกองทุน
-    - ความเสี่ยงของพอร์ตของผู้ใช้ กรณีเป็นกองทุนรวมผสมให้บอกผู้ใช้ให้ศึกษารายละเอียดจากหนังสือชี้ชวนของกองทุน
+  //   ช่วยวิเคราะห์ว่า:
+  //   - พอร์ตของผู้ใช้ต่างจากพอร์ตตัวอย่างที่แนะนำอย่างไร
+  //   - ควรปรับพอร์ตของผู้ใช้อย่างไรให้เหมาะสม ยกเว้นกรณีเป็นกองทุนรวมผสมให้บอกผู้ใช้ให้ศึกษารายละเอียดจากหนังสือชี้ชวนของกองทุน
+  //   - ความเสี่ยงของพอร์ตของผู้ใช้ กรณีเป็นกองทุนรวมผสมให้บอกผู้ใช้ให้ศึกษารายละเอียดจากหนังสือชี้ชวนของกองทุน
 
-    Your response should be provided strictly in HTML format using only <p> tags. Do not use <ul>, <li>,  Markdown formatting,  newline characters (\n), or any other list-related tags.
+  //   Your response should be provided strictly in HTML format using only <p> tags. Do not use <ul>, <li>,  Markdown formatting,  newline characters (\n), or any other list-related tags.
 
-    `;
+  //   `;
 
 //   return prompt;
 
-    const completion = await openai.chat.completions.create({
-      messages: [{ role: "user", content: prompt }],
-      model: "gpt-4o-mini",
-    });
+    // const completion = await openai.chat.completions.create({
+    //   messages: [{ role: "user", content: prompt }],
+    //   model: "gpt-4o-mini",
+    // });
 
-    return completion.choices[0].message.content;
+    // return completion.choices[0].message.content;
 }
 
 aiController.getUserPort = async (req, res, next) => {
