@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
-    "resetDB": "node prisma/resetDB.js"
+    "resetDB": "node prisma/resetDB.js",
+    "postinstall": "prisma generate" 
   },
   "prisma": {
     "seed": "node prisma/seed.js"
