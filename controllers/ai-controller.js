@@ -4,7 +4,7 @@ const createError = require("../utils/createError");
 const aiController = {};
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // ใช้ OpenAI แทน
+  // apiKey: process.env.OPENAI_API_KEY, // ใช้ OpenAI แทน
 });
 
 async function analyzePortfolio(userPortfolio, recommendPort) {
