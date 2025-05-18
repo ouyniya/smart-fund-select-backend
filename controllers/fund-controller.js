@@ -67,12 +67,14 @@ fundController.getFundGroup = async (req, res, next) => {
     //   FROM funds;
     // `;
 
-    const result = await prisma.funds.findMany({
-      distinct: ["fund_compare_group"],
+    const rawResult = await prisma.funds.findMany({
       select: {
         fund_compare_group: true,
       },
     });
+
+    const result = [...new Set(rawResult.map(item => item.fund_compare_group))];
+    // ['🇺🇸', '🇯🇵', '🇹🇭']
 
     if (result.length === 0) {
       return res.status(404).json({ message: "No fund groups found" });
@@ -91,12 +93,14 @@ fundController.getGlobalInv = async (req, res, next) => {
     //   FROM funds;
     // `;
 
-    const result = await prisma.funds.findMany({
-      distinct: ["invest_country_flag"],
+    const rawResult = await prisma.funds.findMany({
       select: {
         invest_country_flag: true,
       },
     });
+
+    const result = [...new Set(rawResult.map(item => item.invest_country_flag))];
+    // ['🇺🇸', '🇯🇵', '🇹🇭']
 
     if (result.length === 0) {
       return res.status(404).json({ message: "No data found" });
