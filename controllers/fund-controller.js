@@ -69,11 +69,11 @@ fundController.getFundGroup = async (req, res, next) => {
 
     const rawResult = await prisma.funds.findMany({
       select: {
-        fund_compare_group: true,
+        fundCompareGroup: true,
       },
     });
 
-    const result = [...new Set(rawResult.map(item => item.fund_compare_group))];
+    const result = [...new Set(rawResult.map(item => item.fundCompareGroup))];
     // ['🇺🇸', '🇯🇵', '🇹🇭']
 
     if (result.length === 0) {
@@ -95,11 +95,11 @@ fundController.getGlobalInv = async (req, res, next) => {
 
     const rawResult = await prisma.funds.findMany({
       select: {
-        invest_country_flag: true,
+        investCountryFlag: true,
       },
     });
 
-    const result = [...new Set(rawResult.map(item => item.invest_country_flag))];
+    const result = [...new Set(rawResult.map(item => item.investCountryFlag))];
     // ['🇺🇸', '🇯🇵', '🇹🇭']
 
     if (result.length === 0) {
