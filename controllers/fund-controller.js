@@ -69,7 +69,7 @@ fundController.getFundGroup = async (req, res, next) => {
     // `;
 
     const result = await prisma.$queryRaw(
-      sql`SELECT DISTINCT fund_compare_group as "fundCompareGroup" FROM funds;`
+      sql`SELECT DISTINCT fund_compare_group as "fundCompareGroup" FROM Funds;`
     );
 
     if (result.length === 0) {
@@ -90,7 +90,7 @@ fundController.getGlobalInv = async (req, res, next) => {
     // `;
 
     const result = await prisma.$queryRaw(
-      sql`SELECT DISTINCT invest_country_flag as "investCountryFlag" FROM funds;`
+      sql`SELECT DISTINCT invest_country_flag as "investCountryFlag" FROM Funds;`
     );
 
     if (result.length === 0) {
