@@ -1,12 +1,11 @@
 const prisma = require("../configs/prisma"); // ใช้สำหรับเชื่อมต่อกับฐานข้อมูลผ่าน Prisma ORM
 const createError = require("../utils/createError");
 const fundController = {};
-import { sql } from "@prisma/client";
 
 fundController.getAllFundNames = async (req, res, next) => {
   //ดึงรายชื่อย่อของกองทุน (classAbbrName) ตามค่าที่ผู้ใช้กรอก
-  // 🔹 ถ้าไม่มี classAbbrName ที่ส่งมาใน query ให้ส่งกลับ { result: [] }
-  // 🔹 ค้นหาข้อมูลจาก classAbbr โดยใช้ Prisma ORM และคืนค่าไม่เกิน 10 รายการ
+// 🔹 ถ้าไม่มี classAbbrName ที่ส่งมาใน query ให้ส่งกลับ { result: [] }
+// 🔹 ค้นหาข้อมูลจาก classAbbr โดยใช้ Prisma ORM และคืนค่าไม่เกิน 10 รายการ
 
   try {
     const { classAbbrName } = req.query;
@@ -63,14 +62,10 @@ fundController.getRiskLevel = async (req, res, next) => {
 
 fundController.getFundGroup = async (req, res, next) => {
   try {
-    //   const result = await prisma.$queryRawUnsafe`
-    //   SELECT DISTINCT fund_compare_group as fundCompareGroup
-    //   FROM funds;
-    // `;
-
-    const result = await prisma.$queryRaw(
-      sql`SELECT DISTINCT fund_compare_group as "fundCompareGroup" FROM Funds;`
-    );
+    const result = await prisma.$queryRaw`
+    SELECT DISTINCT fund_compare_group as fundCompareGroup
+    FROM funds;
+  `;
 
     if (result.length === 0) {
       return res.status(404).json({ message: "No fund groups found" });
@@ -84,14 +79,10 @@ fundController.getFundGroup = async (req, res, next) => {
 
 fundController.getGlobalInv = async (req, res, next) => {
   try {
-    //   const result = await prisma.$queryRawUnsafe`
-    //   SELECT DISTINCT invest_country_flag as investCountryFlag
-    //   FROM funds;
-    // `;
-
-    const result = await prisma.$queryRaw(
-      sql`SELECT DISTINCT invest_country_flag as "investCountryFlag" FROM Funds;`
-    );
+    const result = await prisma.$queryRaw`
+    SELECT DISTINCT invest_country_flag as investCountryFlag
+    FROM funds;
+  `;
 
     if (result.length === 0) {
       return res.status(404).json({ message: "No data found" });
@@ -105,6 +96,7 @@ fundController.getGlobalInv = async (req, res, next) => {
 
 // {{url}}/funds/filter?classAbbrName=&companyId=&fundCompareGroup=&fundRiskLevelId=&investCountryFlag=&dividendPolicy=N&page=2
 fundController.getFunds = async (req, res, next) => {
+
   // 🔹 รับพารามิเตอร์ตัวกรองจาก query เช่น
   // classAbbrName → ค้นหาชื่อย่อของกองทุน
   // companyId → ค้นหากองทุนตามบริษัท
@@ -120,6 +112,7 @@ fundController.getFunds = async (req, res, next) => {
   // FeeDetial → ค่าธรรมเนียม
   // fundPerformanceRisk → ข้อมูลความเสี่ยง
   // 🔹 ส่งข้อมูลกลับไปพร้อมกับจำนวนทั้งหมดของกองทุนที่ตรงกับเงื่อนไข
+
 
   try {
     const {
@@ -235,20 +228,22 @@ fundController.getFunds = async (req, res, next) => {
 };
 
 fundController.sortFunds = async (req, res, next) => {
-  // 🔹 รับพารามิเตอร์ตัวกรองเหมือน getFunds
 
-  // 🔹 ตรวจสอบค่าที่เกี่ยวข้องกับการเรียงลำดับ เช่น
-  // sortBy → เรียงลำดับตามค่าไหน (fee หรือ return)
-  // performanceType, performancePeriod → ใช้ในการเรียงตามผลตอบแทน
+// 🔹 รับพารามิเตอร์ตัวกรองเหมือน getFunds
 
-  // 🔹 ถ้า sortBy === "fee"
-  // กรองเฉพาะกองทุนที่มีค่าธรรมเนียม
-  // เรียงจากค่าธรรมเนียมต่ำสุดไปสูงสุด
-  // ใช้ .slice(skip, skip + Number(limit)) เพื่อตัดข้อมูลตามหน้าที่เลือก
+// 🔹 ตรวจสอบค่าที่เกี่ยวข้องกับการเรียงลำดับ เช่น
+// sortBy → เรียงลำดับตามค่าไหน (fee หรือ return)
+// performanceType, performancePeriod → ใช้ในการเรียงตามผลตอบแทน
 
-  // 🔹 ถ้า sortBy === "return"
-  // กรองเฉพาะค่าผลตอบแทน
-  // เรียงลำดับจากค่าผลตอบแทนที่ต้องการ
+// 🔹 ถ้า sortBy === "fee"
+// กรองเฉพาะกองทุนที่มีค่าธรรมเนียม
+// เรียงจากค่าธรรมเนียมต่ำสุดไปสูงสุด
+// ใช้ .slice(skip, skip + Number(limit)) เพื่อตัดข้อมูลตามหน้าที่เลือก
+
+// 🔹 ถ้า sortBy === "return"
+// กรองเฉพาะค่าผลตอบแทน
+// เรียงลำดับจากค่าผลตอบแทนที่ต้องการ
+
 
   try {
     // filtered variable
@@ -345,6 +340,7 @@ fundController.sortFunds = async (req, res, next) => {
       },
     });
 
+
     countAllResult = await prisma.classAbbr.count({
       where: {
         AND: {
@@ -426,9 +422,9 @@ fundController.sortFunds = async (req, res, next) => {
       console.log(finalResult);
     }
 
-    res.json({
+    res.json({ 
       count: countAllResult,
-      message: finalResult,
+      message: finalResult 
     });
   } catch (error) {
     next(error);
