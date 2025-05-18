@@ -62,7 +62,7 @@ fundController.getRiskLevel = async (req, res, next) => {
 
 fundController.getFundGroup = async (req, res, next) => {
   try {
-    const result = await prisma.$queryRaw`
+    const result = await prisma.$queryRawUnsafe`
     SELECT DISTINCT fund_compare_group as fundCompareGroup
     FROM funds;
   `;
@@ -79,7 +79,7 @@ fundController.getFundGroup = async (req, res, next) => {
 
 fundController.getGlobalInv = async (req, res, next) => {
   try {
-    const result = await prisma.$queryRaw`
+    const result = await prisma.$queryRawUnsafe`
     SELECT DISTINCT invest_country_flag as investCountryFlag
     FROM funds;
   `;
