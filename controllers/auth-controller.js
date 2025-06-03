@@ -4,6 +4,16 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const authController = {};
 
+function maskEmail(email) {
+  const [name, domain] = email.split("@");
+  const maskedName = name.length > 1
+    ? name[0] + "*".repeat(name.length - 1)
+    : "*";
+  const domainParts = domain.split(".");
+  const maskedDomain = "*".repeat(domainParts[0].length) + "." + domainParts.slice(1).join(".");
+  return `${maskedName}@${maskedDomain}`;
+}
+
 authController.register = async (req, res, next) => {
     try {
         const { email, username, password } = req.body;
@@ -26,6 +36,8 @@ authController.register = async (req, res, next) => {
 
         // hash password using salt 10
         const hashedPassword = await bcrypt.hash(password, 10)
+
+        
 
         // create variable for insert into table
         const data = {
